@@ -1,2 +1,2 @@
 # kalmaNN
-Extended Kalman Filter Training for Neural-Networks
+Extended Kalman Filter for Training Neural-Networks
