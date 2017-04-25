@@ -193,7 +193,7 @@ class KNN:
         last_pulse = 0
 
         # Shuffle data between epochs
-        print("Training...\n")
+        print("Training...")
         for epoch in xrange(nepochs):
             rand_idx = np.random.permutation(len(U))
             U_shuffled = U[rand_idx]
@@ -215,8 +215,9 @@ class KNN:
                     print("   Iter: {}%".format(int(100*(i+1)/len(U))))
                     print("    MSE: {}".format(np.round(np.mean(np.square(Y - self.feedforward(U))), 6)))
                     if method == 'ekf': print("tr(Cov): {}".format(np.round(np.trace(self.P), 6)))
-                    print("------------------\n\n")
+                    print("------------------")
                     last_pulse = time()
+        print("\nTraining complete!\n\n")
 
 ####
 
@@ -241,7 +242,7 @@ class KNN:
 ####
 
     def _sgd(self, u, y, h, l, step):
-
-        ###
-        print("SGD NOT YET IMPLEMENTED\n")
-        assert False
+        e = h - y
+        self.W[1] = self.W[1] - step*np.hstack((np.outer(e, l), e[np.newaxis]))
+        D = (e.dot(self.W[1][:, :-1])*self.dsig(l)).flatten()
+        self.W[0] = self.W[0] - step*np.hstack((np.outer(D, u), D[:, np.newaxis]))

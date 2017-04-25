@@ -7,9 +7,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from knn import KNN
 
-# Create KNN
-knn = KNN(nu=2, ny=1, nl=10, neuron='sigmoid')
-
 # Get some training data, simple XOR or somethin'
 U = np.array([[   1,    0],
               [   0,    1],
@@ -28,7 +25,8 @@ Y = np.array([[1],
               [0],
               [0]])
 
-# Train
+# Create and train KNN
+knn = KNN(nu=2, ny=1, nl=10, neuron='sigmoid')
 knn.train(nepochs=100, U=U, Y=Y, method='ekf', P=0.2, Q=0, R=0.2, step=1, pulse_T=0.1)
 
 # Evaluation
