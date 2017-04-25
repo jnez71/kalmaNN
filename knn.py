@@ -1,5 +1,5 @@
 """
-Contains a class for using and EKF-training a basic neural network.
+Contains a class for EKF-training a basic neural network.
 This is primarily to demonstrate the advantages of EKF-training.
 See the class docstrings for more details.
 This module also includes a function for loading stored KNN objects.
@@ -38,9 +38,9 @@ class KNN:
     """
     def __init__(self, nu, ny, nl, neuron, sprW=5):
         """
-            nu: dimensionality of input; integer
-            ny: dimensionality of output; integer
-            nl: number of hidden-layer neurons; integer
+            nu: dimensionality of input; positive integer
+            ny: dimensionality of output; positive integer
+            nl: number of hidden-layer neurons; positive integer
         neuron: activation function type; 'sigmoid', 'tanh', or 'relu'
           sprW: spread of initial randomly sampled synapse weights; float scalar
 
@@ -78,11 +78,13 @@ class KNN:
 
     def save(self, filename):
         """
-        Saves the current NN to a file with the given string name.
+        Saves the current NN to a file with the given string filename.
 
         """
         if not isinstance(filename, str):
             raise ValueError("The filename must be a string.")
+        if filename[-4:] != '.knn':
+            filename = filename + '.knn'
         with open(filename, 'wb') as output:
             pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
 
@@ -95,7 +97,7 @@ class KNN:
         the intermediate activations l.
 
         """
-        if U.ndim == 1: U = U[:, np.newaxis]
+        if U.ndim == 1 and len(U) > self.nu: U = U[:, np.newaxis]
         l = self.sig(self._affine_dot(self.W[0], U))
         h = self._affine_dot(self.W[1], l)
         if get_l: return h, l
@@ -103,39 +105,52 @@ class KNN:
 
 ####
 
-    def train(self, nepochs, U, Y, method, P=None, Q=None, R=None, step=1, pulse=1):
+    def classify(self, U, high, low=0):
+        """
+        Feeds forward an (m by nu) array of inputs U through the NN.
+        For each associated output, the closest integer between high
+        and low is returned as a (m by ny) classification matrix.
+        Basically, your training data should be (u, int_between_high_low).
+
+        """
+        return np.int64(np.clip(np.round(self.feedforward(U), 0), low, high))
+
+####
+
+    def train(self, nepochs, U, Y, method, P=None, Q=None, R=None, step=1, pulse_T=-1):
         """
         nepochs: number of epochs (presentations of the training data); integer
               U: input training data; float array m samples by nu inputs
               Y: output training data; float array m samples by ny outputs
          method: extended kalman filter ('ekf') or stochastic gradient descent ('sgd')
-              P: initial weight covariance for ekf; float scalar or (nW by nW) array
-              Q: process covariance for ekf; float scalar or (nW by nW) array
-              R: data covariance for ekf; float scalar or (ny by ny) array
-           step: step size scaling; float scalar
-          pulse: number of seconds between displaying current training status; float
+              P: initial weight covariance for ekf; float scalar or (nW by nW) posdef array
+              Q: process covariance for ekf; float scalar or (nW by nW) semiposdef array
+              R: data covariance for ekf; float scalar or (ny by ny) posdef array
+           step: step-size scaling; float scalar
+        pulse_T: number of seconds between displaying current training status; float
 
         If method is 'sgd' then P, Q, and R are unused, so carefully choose step.
         If method is 'ekf' then step=1 is "optimal", R must be specified, and:
             P is None: P = self.P if self.P has been created by previous training
             Q is None: Q = 0
         If P, Q, or R are given as scalars, they will scale an identity matrix.
-        Set pulse to -1 to suppress training status display.
+        Set pulse_T to -1 (default) to suppress training status display.
 
         """
         # Verify data
-        U = np.array(U, dtype=np.float64)
-        Y = np.array(Y, dtype=np.float64)
+        U = np.float64(U)
+        Y = np.float64(Y)
         if len(U) != len(Y):
             raise ValueError("Number of input data points must match number of output data points.")
-        if U.ndim != 1 and U.shape[-1] != self.nu:
-            raise ValueError("Shape of U must be (m by nu) or (m,).")
-        if Y.ndim != 1 and Y.shape[-1] != self.ny:
-            raise ValueError("Shape of Y must be (m by ny) or (m,).")
+        if (U.ndim == 1 and self.nu != 1) or (U.ndim != 1 and U.shape[-1] != self.nu):
+            raise ValueError("Shape of U must be (m by nu).")
+        if (Y.ndim == 1 and self.ny != 1) or (Y.ndim != 1 and Y.shape[-1] != self.ny):
+            raise ValueError("Shape of Y must be (m by ny).")
 
         # Set-up
         if method == 'ekf':
             self.update = self._ekf
+
             if P is None:
                 if self.P is None:
                     raise ValueError("Initial P not specified.")
@@ -144,17 +159,19 @@ class KNN:
             else:
                 if np.shape(P) != (self.nW, self.nW):
                     raise ValueError("P must be a float scalar or (nW by nW) array.")
-                self.P = np.array(P, dtype=np.float64)
-            self.Q_nonzero = True
+                self.P = np.float64(P)
+
             if Q is None:
                 self.Q = np.zeros((self.nW, self.nW))
-                self.Q_nonzero = False
             elif np.isscalar(Q):
                 self.Q = Q*np.eye(self.nW)
             else:
                 if np.shape(Q) != (self.nW, self.nW):
                     raise ValueError("Q must be a float scalar or (nW by nW) array.")
-                self.Q = np.array(Q, dtype=np.float64)
+                self.Q = np.float64(Q)
+            if np.any(self.Q): self.Q_nonzero = True
+            else: self.Q_nonzero = False
+
             if R is None:
                 raise ValueError("R must be specified for EKF training.")
             elif np.isscalar(R):
@@ -162,7 +179,10 @@ class KNN:
             else:
                 if np.shape(R) != (self.ny, self.ny):
                     raise ValueError("R must be a float scalar or (ny by ny) array.")
-                self.R = np.array(R, dtype=np.float64)
+                self.R = np.float64(R)
+            if npl.matrix_rank(self.R) != len(self.R):
+                raise ValueError("R must be positive definite.")
+
         elif method == 'sgd':
             self.update = self._sgd
         else:
@@ -170,6 +190,7 @@ class KNN:
         last_pulse = 0
 
         # Shuffle data between epochs
+        print("Training...\n")
         for epoch in xrange(nepochs):
             rand_idx = np.random.permutation(len(U))
             U_shuffled = U[rand_idx]
@@ -185,9 +206,10 @@ class KNN:
                 self.update(u, y, h, l, step)
 
                 # Heartbeat
-                if time() - last_pulse > pulse:
-                    print("  Epoch: {}/{}".format(epoch, nepochs))
+                if (pulse_T >= 0 and time()-last_pulse > pulse_T) or (epoch == nepochs-1 and i == len(U)-1):
                     print("------------------")
+                    print("  Epoch: {}%".format(int(100*(epoch+1)/nepochs)))
+                    print("   Iter: {}%".format(int(100*(i+1)/len(U))))
                     print("    MSE: {}".format(np.round(np.mean(np.square(Y - self.feedforward(U))), 6)))
                     if method == 'ekf': print("tr(Cov): {}".format(np.round(np.trace(self.P), 6)))
                     print("------------------\n\n")
@@ -216,5 +238,7 @@ class KNN:
 ####
 
     def _sgd(self, u, y, h, l, step):
-        print("SGD NOT YET IMPLEMENTED")  ###
+
+        ###
+        print("SGD NOT YET IMPLEMENTED\n")
         assert False
