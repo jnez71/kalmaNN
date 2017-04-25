@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from knn import KNN
 
 # Create KNN
-knn = KNN(nu=1, ny=1, nl=12, neuron='sigmoid')
+knn = KNN(nu=1, ny=1, nl=8, neuron='sigmoid')
 
 # Get some training data, a fun compact function or somethin'
 stdev = 0.05
@@ -26,10 +26,3 @@ plt.scatter(U, Y, c='r')
 plt.plot(X, F, c='b', linewidth=3)
 plt.grid(True)
 plt.show()
-
-
-
-# Need to make saving/loading work still
-# knn.save('result')
-
-

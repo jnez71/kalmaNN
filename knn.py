@@ -24,7 +24,10 @@ def load_knn(filename):
     if filename[-4:] != '.knn':
         filename = filename + '.knn'
     with open(filename, 'rb') as input:
-        return pickle.load(input)
+        W, neuron, P = pickle.load(input)
+    obj = KNN(W[0].shape[1]-1, W[1].shape[0], W[0].shape[0], neuron)
+    obj.W, obj.P = W, P
+    return obj
 
 ##########
 
@@ -86,7 +89,7 @@ class KNN:
         if filename[-4:] != '.knn':
             filename = filename + '.knn'
         with open(filename, 'wb') as output:
-            pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
+            pickle.dump((self.W, self.neuron, self.P), output, pickle.HIGHEST_PROTOCOL)
 
 ####
 
