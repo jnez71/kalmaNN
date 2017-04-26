@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from knn import KNN
 
-# Get some training data classifications, noisy spirals!
+# Get some noisy training data classifications, spirals!
 n = 100
 stdev = 0.2
 U = np.zeros((n*3, 2))

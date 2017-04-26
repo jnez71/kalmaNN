@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from knn import KNN
 
-# Get some training data, a fun compact function with noise
+# Get some noisy training data, a fun compact function
 stdev = 0.05
 U = np.arange(-10, 10, 0.2)
 Y = np.exp(-U**2) + 0.5*np.exp(-(U-3)**2) + np.random.normal(0, stdev, len(U))
