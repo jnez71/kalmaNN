@@ -1,5 +1,5 @@
 """
-Contains a class for EKF-training a basic neural network.
+Contains a class for EKF-training a feedforward neural-network.
 This is primarily to demonstrate the advantages of EKF-training.
 See the class docstrings for more details.
 This module also includes a function for loading stored KNN objects.
@@ -35,8 +35,10 @@ class KNN:
     """
     Class for a feedforward neural network (NN). Currently only handles 1 hidden-layer,
     is always fully-connected, and uses the same activation function type for every neuron.
-    There is no output saturation, so classification must be handled as a real function fit.
     The NN can be trained by extended kalman filter (EKF) or stochastic gradient descent (SGD).
+    Use the train function to train the NN, the feedforward function to compute the NN output,
+    and the classify function to round a feedforward to the nearest class values. A save function
+    is also provided to store a KNN object in the working directory.
 
     """
     def __init__(self, nu, ny, nl, neuron, sprW=5):
