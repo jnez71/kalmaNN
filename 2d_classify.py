@@ -31,7 +31,7 @@ nepochs_sgd = 200
 knn_ekf.train(nepochs=nepochs_ekf, U=U, Y=Y, method='ekf', P=0.2, Q=0, R=stdev**2, pulse_T=2)
 knn_sgd.train(nepochs=nepochs_sgd, U=U, Y=Y, method='sgd', step=0.1, pulse_T=2)
 
-# Use KNN's as classifiers
+# Use the KNNs as classifiers
 F_ekf = knn_ekf.classify(U, high=2, low=0)
 F_sgd = knn_sgd.classify(U, high=2, low=0)
 print("EKF Classification Accuracy: {}%".format(int(100*np.sum(F_ekf==Y)/len(Y))))
