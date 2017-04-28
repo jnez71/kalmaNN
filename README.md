@@ -10,3 +10,5 @@ An implementation of chapter two from [this text](http://bit.ly/2oGjaMu).
 ![alt text](http://i.imgur.com/pxZf36m.png)
 
 ![alt text](http://i.imgur.com/tGaiMFV.png)
+
+![alt text](http://i.imgur.com/wSyH7QP.png)
