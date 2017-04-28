@@ -79,6 +79,9 @@ class KNN:
         # Function for pushing signals through a synapse with bias
         self._affine_dot = lambda W, V: np.dot(np.atleast_1d(V), W[:, :-1].T) + W[:, -1]
 
+        # Function for computing the RMS error of the current fit to some data set
+        self.compute_rms = lambda U, Y: np.sqrt(np.mean(np.square(Y - self.feedforward(U))))
+
 ####
 
     def save(self, filename):
@@ -141,6 +144,9 @@ class KNN:
         If P, Q, or R are given as scalars, they will scale an identity matrix.
         Set pulse_T to -1 (default) to suppress training status display.
 
+        Returns a list of the RMS errors at every epoch and a list of the covariance traces
+        at every iteration. The covariance trace list will be empty if using sgd.
+
         """
         # Verify data
         U = np.float64(U)
@@ -193,6 +199,8 @@ class KNN:
         else:
             raise ValueError("The method argument must be either 'ekf' or 'sgd'.")
         last_pulse = 0
+        RMS = []
+        trcov = []
 
         # Shuffle data between epochs
         print("Training...")
@@ -200,6 +208,7 @@ class KNN:
             rand_idx = np.random.permutation(len(U))
             U_shuffled = U[rand_idx]
             Y_shuffled = Y[rand_idx]
+            RMS.append(self.compute_rms(U, Y))
 
             # Train
             for i, (u, y) in enumerate(zip(U_shuffled, Y_shuffled)):
@@ -209,17 +218,20 @@ class KNN:
 
                 # Do the learning
                 self.update(u, y, h, l, step)
+                if method == 'ekf': trcov.append(np.trace(self.P))
 
                 # Heartbeat
                 if (pulse_T >= 0 and time()-last_pulse > pulse_T) or (epoch == nepochs-1 and i == len(U)-1):
                     print("------------------")
                     print("  Epoch: {}%".format(int(100*(epoch+1)/nepochs)))
                     print("   Iter: {}%".format(int(100*(i+1)/len(U))))
-                    print("    MSE: {}".format(np.round(np.mean(np.square(Y - self.feedforward(U))), 6)))
-                    if method == 'ekf': print("tr(Cov): {}".format(np.round(np.trace(self.P), 6)))
+                    print("   RMSE: {}".format(np.round(RMS[-1], 6)))
+                    if method == 'ekf': print("tr(Cov): {}".format(np.round(trcov[-1], 6)))
                     print("------------------")
                     last_pulse = time()
         print("\nTraining complete!\n\n")
+        RMS.append(self.compute_rms(U, Y))
+        return RMS, trcov
 
 ####
 
