@@ -125,7 +125,7 @@ class KNN:
 
 ####
 
-    def train(self, nepochs, U, Y, method, P=None, Q=None, R=None, step=1, pulse_T=-1):
+    def train(self, nepochs, U, Y, method, P=None, Q=None, R=None, step=1, dtol=-1, dslew=1, pulse_T=-1):
         """
         nepochs: number of epochs (presentations of the training data); integer
               U: input training data; float array m samples by nu inputs
@@ -135,6 +135,8 @@ class KNN:
               Q: process covariance for ekf; float scalar or (nW by nW) semiposdef array
               R: data covariance for ekf; float scalar or (ny by ny) posdef array
            step: step-size scaling; float scalar
+           dtol: finish when RMS error avg change is <dtol (or nepochs exceeded); float scalar
+          dslew: how many deltas over which to examine average RMS change; integer
         pulse_T: number of seconds between displaying current training status; float
 
         If method is 'sgd' then P, Q, and R are unused, so carefully choose step.
@@ -209,6 +211,11 @@ class KNN:
             U_shuffled = U[rand_idx]
             Y_shuffled = Y[rand_idx]
             RMS.append(self.compute_rms(U, Y))
+
+            # Check for convergence
+            if len(RMS) > dslew and abs(RMS[-1] - RMS[-1-dslew])/dslew < dtol:
+                print("\nConverged after {} epochs!\n\n".format(epoch+1))
+                return RMS, trcov
 
             # Train
             for i, (u, y) in enumerate(zip(U_shuffled, Y_shuffled)):
