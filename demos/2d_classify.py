@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Training and using a KNN for classification of 2D data.
 Comparison of training methods, EKF vs SGD.

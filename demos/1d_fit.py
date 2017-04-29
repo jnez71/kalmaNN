@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Training and using a KNN for 1D data interpolation and extrapolation.
 Comparison of training methods, EKF vs SGD.
