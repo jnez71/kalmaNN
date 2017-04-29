@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Training and using a KNN for 3D-state dynamical prediction.
 

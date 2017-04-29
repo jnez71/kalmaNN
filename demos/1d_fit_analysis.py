@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Use the 1D data interpolation/extrapolation problem to benchmark convergence
 variance. Comparison of training methods, EKF vs SGD.
