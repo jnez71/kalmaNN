@@ -46,7 +46,7 @@ class KNN:
             nu: dimensionality of input; positive integer
             ny: dimensionality of output; positive integer
             nl: number of hidden-layer neurons; positive integer
-        neuron: activation function type; 'sigmoid', 'tanh', or 'relu'
+        neuron: activation function type; 'logistic', 'tanh', or 'relu'
           sprW: spread of initial randomly sampled synapse weights; float scalar
 
         """
@@ -56,7 +56,7 @@ class KNN:
         self.nl = int(nl)
 
         # Neuron type
-        if neuron == 'sigmoid':
+        if neuron == 'logistic':
             self.sig = lambda V: (1 + np.exp(-V))**-1
             self.dsig = lambda sigV: sigV * (1 - sigV)
         elif neuron == 'tanh':
@@ -66,7 +66,7 @@ class KNN:
             self.sig = lambda V: np.clip(V, 0, np.inf)
             self.dsig = lambda sigV: np.float64(sigV > 0)
         else:
-            raise ValueError("The neuron argument must be 'sigmoid', 'tanh', or 'relu'.")
+            raise ValueError("The neuron argument must be 'logistic', 'tanh', or 'relu'.")
         self.neuron = neuron
 
         # Initial synapse weight matrices

@@ -21,8 +21,8 @@ ekf_results = []; sgd_results = []
 for i in xrange(50):
 
     # Create two identical KNN's that will be trained differently
-    knn_ekf = KNN(nu=1, ny=1, nl=10, neuron='sigmoid')
-    knn_sgd = KNN(nu=1, ny=1, nl=10, neuron='sigmoid')
+    knn_ekf = KNN(nu=1, ny=1, nl=10, neuron='logistic')
+    knn_sgd = KNN(nu=1, ny=1, nl=10, neuron='logistic')
 
     # Train
     RMS_ekf, trcov = knn_ekf.train(nepochs=nepochs_ekf, U=U, Y=Y, method='ekf', P=0.5, Q=0, R=stdev**2, pulse_T=-1)

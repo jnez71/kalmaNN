@@ -15,8 +15,8 @@ U = np.arange(-10, 10, 0.2)
 Y = np.exp(-U**2) + 0.5*np.exp(-(U-3)**2) + np.random.normal(0, stdev, len(U))
 
 # Create two identical KNN's that will be trained differently
-knn_ekf = KNN(nu=1, ny=1, nl=10, neuron='sigmoid')
-knn_sgd = KNN(nu=1, ny=1, nl=10, neuron='sigmoid')
+knn_ekf = KNN(nu=1, ny=1, nl=10, neuron='logistic')
+knn_sgd = KNN(nu=1, ny=1, nl=10, neuron='logistic')
 
 # Train
 nepochs_ekf = 100

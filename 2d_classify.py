@@ -22,8 +22,8 @@ for j in xrange(3):
 Y[-20:-18] = 0
 
 # Create two identical KNN's that will be trained differently
-knn_ekf = KNN(nu=2, ny=1, nl=10, neuron='sigmoid')
-knn_sgd = KNN(nu=2, ny=1, nl=10, neuron='sigmoid')
+knn_ekf = KNN(nu=2, ny=1, nl=10, neuron='logistic')
+knn_sgd = KNN(nu=2, ny=1, nl=10, neuron='logistic')
 
 # Train
 nepochs_ekf = 100
