@@ -6,7 +6,7 @@ Comparison of training methods, EKF vs SGD.
 from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
-from knn import KNN
+import kalmann
 
 # Get some noisy training data classifications, spirals!
 n = 100
@@ -22,8 +22,8 @@ for j in xrange(3):
 Y[-20:-18] = 0
 
 # Create two identical KNN's that will be trained differently
-knn_ekf = KNN(nu=2, ny=1, nl=10, neuron='logistic')
-knn_sgd = KNN(nu=2, ny=1, nl=10, neuron='logistic')
+knn_ekf = kalmann.KNN(nu=2, ny=1, nl=10, neuron='logistic')
+knn_sgd = kalmann.KNN(nu=2, ny=1, nl=10, neuron='logistic')
 
 # Train
 nepochs_ekf = 100

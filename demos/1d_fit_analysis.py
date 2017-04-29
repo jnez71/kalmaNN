@@ -8,7 +8,7 @@ from __future__ import division
 import numpy as np; npl = np.linalg
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
-from knn import KNN
+import kalmann
 
 # Get some noisy training data, a fun compact function
 stdev = 0.05
@@ -21,8 +21,8 @@ ekf_results = []; sgd_results = []
 for i in xrange(50):
 
     # Create two identical KNN's that will be trained differently
-    knn_ekf = KNN(nu=1, ny=1, nl=10, neuron='logistic')
-    knn_sgd = KNN(nu=1, ny=1, nl=10, neuron='logistic')
+    knn_ekf = kalmann.KNN(nu=1, ny=1, nl=10, neuron='logistic')
+    knn_sgd = kalmann.KNN(nu=1, ny=1, nl=10, neuron='logistic')
 
     # Train
     RMS_ekf, trcov = knn_ekf.train(nepochs=nepochs_ekf, U=U, Y=Y, method='ekf', P=0.5, Q=0, R=stdev**2, pulse_T=-1)
@@ -34,15 +34,16 @@ for i in xrange(50):
 
 # Evaluation
 fig = plt.figure()
+xlim = [0.33, 0.36]
 fig.suptitle("Histogram of Final RMS Errors", fontsize=22)
 ax = fig.add_subplot(2, 1, 1)
 ax.hist(ekf_results, 20, normed=1)
-ax.set_xlim([0.330, 0.355])
+ax.set_xlim(xlim)
 ax.set_ylabel("Using EKF", fontsize=18)
 ax.grid(True)
 ax = fig.add_subplot(2, 1, 2)
 ax.hist(sgd_results, 20, normed=1)
-ax.set_xlim([0.335, 0.36])
+ax.set_xlim(xlim)
 ax.set_ylabel("Using SGD", fontsize=18)
 ax.set_xlabel("RMS", fontsize=18)
 ax.grid(True)

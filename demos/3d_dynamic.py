@@ -7,7 +7,7 @@ from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from knn import KNN, load_knn
+import kalmann
 
 # Get some training data from the simulation of a nonlinear system, the Lorenz Attractor!
 dt = 0.01  # physical resolution
@@ -26,10 +26,10 @@ per = 0.01  # training data sampling period
 skip = int(per/dt)
 
 # Create and train KNN
-knn = KNN(nu=3, ny=3, nl=30, neuron='tanh')
-knn.train(nepochs=1, U=X[::skip], Y=Xdot[::skip], method='ekf', P=0.5, R=0.5, pulse_T=1)
+knn = kalmann.KNN(nu=3, ny=3, nl=20, neuron='tanh')
+knn.train(nepochs=1, U=X[::skip], Y=Xdot[::skip], method='ekf', P=0.5, R=0.1, pulse_T=1)
 # knn.save("lorenz")
-# knn = load_knn('lorenz')
+# knn = kalmann.load_knn('lorenz')
 
 # Use KNN to simulate system from same initial condition
 Xh = np.zeros_like(X)
