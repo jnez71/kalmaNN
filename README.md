@@ -14,3 +14,5 @@ The file knn.py contains a class for creating and training a multilayer perceptr
 ![alt text](http://i.imgur.com/tGaiMFV.png)
 
 ![alt text](http://i.imgur.com/wSyH7QP.png)
+
+![alt text](http://i.imgur.com/Mi8B6y0.png)
