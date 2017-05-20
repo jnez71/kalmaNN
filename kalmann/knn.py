@@ -105,6 +105,7 @@ class KNN:
         the intermediate activations l.
 
         """
+        U = np.float64(U)
         if U.ndim == 1 and len(U) > self.nu: U = U[:, np.newaxis]
         l = self.sig(self._affine_dot(self.W[0], U))
         h = self._affine_dot(self.W[1], l)
