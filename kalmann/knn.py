@@ -160,6 +160,7 @@ class KNN:
             raise ValueError("Shape of U must be (m by nu).")
         if (Y.ndim == 1 and self.ny != 1) or (Y.ndim != 1 and Y.shape[-1] != self.ny):
             raise ValueError("Shape of Y must be (m by ny).")
+        if Y.ndim == 1 and len(Y) > self.ny: Y = Y[:, np.newaxis]
 
         # Set-up
         if method == 'ekf':
