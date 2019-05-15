@@ -208,7 +208,7 @@ class KNN:
 
         # Shuffle data between epochs
         print("Training...")
-        for epoch in xrange(nepochs):
+        for epoch in range(nepochs):
             rand_idx = np.random.permutation(len(U))
             U_shuffled = U[rand_idx]
             Y_shuffled = Y[rand_idx]
