@@ -1,7 +1,7 @@
 # kalmaNN
 Extended Kalman Filter for Training Neural-Networks
 
-An implementation of chapter two from [this text](http://bit.ly/2oGjaMu).
+An implementation of chapter two from [Kalman Filtering and Neural Networks](https://books.google.com/books?id=6dHEojwXU6MC&lpg=PP1&pg=PA30#v=onepage&q&f=false) by Haykin.
 
 The file knn.py contains a class for creating and training a multilayer perceptron by either extended Kalman filter (Newton-Raphson) or stochastic gradient descent. Enjoy!
 
